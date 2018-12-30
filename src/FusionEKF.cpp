@@ -36,12 +36,14 @@ FusionEKF::FusionEKF() {
    * TODO: Finish initializing the FusionEKF.
    * TODO: Set the process and measurement noises
    */
+
+  // Measurement matrix
   H_laser_ << 1,0,0,0,
               0,1,0,0;
 
-  Hj_ << 0,0,0,0,
-         0,0,0,0,
-         0,0,0,0;
+  // Measurement jacobian
+  Hj_ = MatrixXd::Zero(3,4);
+
 }
 
 /**
@@ -60,7 +62,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      * You'll need to convert radar from polar to cartesian coordinates.
      */
 
-    // State vector
+    // State vector (will be initialized based on whether first reading is radar or lidar)
     VectorXd x(4);
 
     // State covariance matrix
@@ -73,7 +75,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     // Transition matrix
     MatrixXd F(4,4);
     F << 1,0,1,0,
-         0,1,0,0,
+         0,1,0,1,
          0,0,1,0,
          0,0,0,1;
 
@@ -87,16 +89,14 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     // first measurement
     cout << "EKF: " << endl;
 
-    previous_timestamp_ = measurement_pack.timestamp_;
-
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       // TODO: Convert radar from polar to cartesian coordinates
       //         and initialize state.
-      double rho = measurement_pack.raw_measurements_[0];
-      double theta = measurement_pack.raw_measurements_[1];
+      float rho = measurement_pack.raw_measurements_[0];
+      float phi = measurement_pack.raw_measurements_[1];
 
-      double px = rho * cos(theta);
-      double py = rho * sin(theta);
+      float px = rho * cos(phi);
+      float py = rho * sin(phi);
 
       x << px,
            py,
