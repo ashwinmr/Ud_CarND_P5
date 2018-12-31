@@ -74,8 +74,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     // Transition matrix
     MatrixXd F(4,4);
-    F << 1,0,1,0,
-         0,1,0,1,
+    F << 1,0,0,0,
+         0,1,0,0,
          0,0,1,0,
          0,0,0,1;
 
